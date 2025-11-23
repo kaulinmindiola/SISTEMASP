@@ -1,0 +1,149 @@
+<!DOCTYPE html >
+<html xmlns:th="http://thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Asocabildos - Inicio</title>
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="style.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column vh-100">
+    <!-- Inicio Header -->
+    <div th:insert="layout/header :: header"></div>
+    <!-- Fin Header -->
+    
+    <main class="flex-grow-1">
+    <div class="container my-5">
+          <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center rounded-3 border shadow-lg bg-light">
+            <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
+              <h1 class="display-4 fw-bold lh-1 text-success">Talento Humano Asocabildos</h1>
+              <p class="lead text-muted mt-3">Bienvenido a la plataforma oficial de empleo de Asocabildos. Gestionamos oportunidades laborales con transparencia y compromiso social. Únete a nuestro equipo y contribuye al desarrollo de nuestra comunidad.</p>
+              <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3 mt-4">
+                <!-- Botón Verde Institucional -->
+                <button type="button" class="btn btn-success btn-lg px-4 me-md-2 fw-bold">Conoce Nuestra Misión</button>
+                <button type="button" class="btn btn-outline-secondary btn-lg px-4">Contáctanos</button>
+              </div>
+            </div>
+            <div class="col-lg-4 offset-lg-1 p-0 position-relative overflow-hidden shadow-lg rounded-3">
+              <!-- Imagen representativa -->
+              <div class="position-lg-absolute top-0 left-0 overflow-hidden">
+                <img class="d-block rounded-lg-3" src="/img/img-banner.jpg" alt="Asocabildos Equipo" width="720" style="object-fit: cover; height: 100%;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container py-5" id="custom-cards">
+              <h2 class="pb-2 border-bottom text-success fw-bold">Convocatorias Destacadas</h2>
+              <p class="text-muted mb-5">Explora las vacantes más recientes en nuestros diversos sectores de acción.</p>
+            
+              <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-2">
+                     <!-- Tarjeta de Trabajo -->
+                     <div th:each="job : ${jobs}" class="col">
+                          <div class="card shadow-sm h-100 border-0">
+                            <!-- Placeholder o imagen del sector -->
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 180px;">
+                                <!-- Si tiene imagen la mostramos, si no, mostramos la letra -->
+                                <img th:if="${job.urlImg != null and job.urlImg != ''}" th:src="${job.urlImg}" class="card-img-top" alt="Oferta" style="height: 100%; object-fit: cover;">
+                                <span th:unless="${job.urlImg != null and job.urlImg != ''}" class="fs-1 fw-bold" th:text="${#strings.substring(job.title,0,1)}">A</span>
+                            </div>
+                
+                            <div class="card-body d-flex flex-column">
+                              <small class="text-success fw-bold text-uppercase mb-2">Convocatoria Abierta</small>
+                              <h4 class="card-title text-dark" th:text="${job.title}">Título Oferta</h4>
+                              <p class="card-text text-muted flex-grow-1" th:text="${job.description}">Descripción breve...</p>
+                            
+                              <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                <div class="btn-group w-100">
+                                  
+                                  <!-- CORRECCIÓN 1: Botón "Postularme" oculto para ADMIN -->
+                                  <a type="button" class="btn btn-sm btn-success fw-bold" 
+                                     th:href="@{/postulant/new-postulant(jobId=${job.id})}"
+                                     sec:authorize="!hasRole('ADMIN')">Postularme</a>
+                                     
+                                  <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" th:attr="data-bs-target='#miModal' + ${job.id}">Ver Detalles</button>
+                                </div>
+                                
+                                <!-- Modal Detalles -->
+                                    <div class="modal fade" th:id="'miModal' + ${job.id}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-success text-white">
+                                                    <h5 class="modal-title" th:text="${job.title}"></h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                     <h6 class="fw-bold text-success">Descripción del Cargo</h6>
+                                                     <p th:text="${job.description}"></p>
+                                                     <hr>
+                                                     <h6 class="fw-bold text-success">Requisitos Indispensables</h6>
+                                                     <ul class="list-group list-group-flush">
+                                                        <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i><span th:text="${job.requirements1}"></span></li>
+                                                        <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i><span th:text="${job.requirements2}"></span></li>
+                                                        <li class="list-group-item"><i class="bi bi-check-circle text-success me-2"></i><span th:text="${job.requirements3}"></span></li>
+                                                     </ul>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    
+                                                    <!-- CORRECCIÓN 2: Botón del Modal oculto para ADMIN -->
+                                                    <a type="button" class="btn btn-success" 
+                                                       th:href="@{/postulant/new-postulant(jobId=${job.id})}"
+                                                       sec:authorize="!hasRole('ADMIN')">Iniciar Postulación</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <!-- Fin Modal -->
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    
+              </div>
+            </div>
+            
+            <section class="bg-light py-5">
+                <div class="container" id="featured-3">
+                          <h2 class="pb-2 border-bottom text-center text-success fw-bold">Proceso de Selección Asocabildos</h2>
+                          <div class="row g-5 py-5">
+                            <div class="feature col-md-4 text-center">
+                              <div class="text-success bg-white rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                                  <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                  <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                                </svg>
+                              </div>
+                              <h3 class="fs-4">1. Regístrate</h3>
+                              <p>Crea tu cuenta en nuestro portal para acceder a todas las convocatorias vigentes de la asociación.</p>
+                            </div>
+                            <div class="feature col-md-4 text-center">
+                              <div class="text-success bg-white rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-file-earmark-text-fill" viewBox="0 0 16 16">
+                                  <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4 10.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm.5 2.5a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z"/>
+                                </svg>
+                              </div>
+                              <h3 class="fs-4">2. Postúlate</h3>
+                              <p>Completa el formulario digital, adjunta tu hoja de vida y soportes requeridos para la vacante.</p>
+                            </div>
+                            <div class="feature col-md-4 text-center">
+                              <div class="text-success bg-white rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                </svg>
+                              </div>
+                              <h3 class="fs-4">3. Seguimiento</h3>
+                              <p>Monitorea el estado de tu solicitud en tiempo real desde tu perfil de usuario.</p>
+                            </div>
+                          </div>
+                        </div>
+            </section>
+        </main>
+    <!-- Inicio Header -->
+    <div th:insert="layout/footer :: footer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>   
+</body>
+</html>

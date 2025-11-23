@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Postulación - Asocabildos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column vh-100 bg-light">
+    <div th:insert="layout/header :: header"></div>
+    
+    <main class="flex-grow-1 py-5">
+    <div class="container">
+       <div class="row justify-content-center">
+           <div class="col-lg-8">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-success">Formalizar Postulación</h2>
+                    <p class="text-muted">Completa tu perfil profesional para aplicar a esta vacante.</p>
+                </div>
+
+               <div class="card shadow border-0">
+                   <div class="card-body p-5">
+                       <form class="was-validated" th:action="@{/postulant/registration-postulant}" th:object="${postulant}" method="POST" enctype="multipart/form-data">
+                           
+                           <h5 class="border-bottom pb-2 mb-3">Datos Personales</h5>
+                           <div class="row g-3 mb-4">
+                             <div class="col-md-6">
+                               <label class="form-label fw-bold">Edad</label>
+                               <input type="number" class="form-control" th:field="*{age}" required>
+                             </div>
+                             <div class="col-md-6">
+                                   <label class="form-label fw-bold">Teléfono de Contacto</label>
+                                   <div class="input-group">
+                                       <span class="input-group-text bg-light">+57</span>
+                                       <input type="text" class="form-control" th:field="*{phone}" required>
+                                   </div>
+                              </div>
+                              <div class="col-12">
+                                <label class="form-label fw-bold">Domicilio Actual</label>
+                                <input type="text" class="form-control" th:field="*{address}" placeholder="Dirección completa" required>
+                              </div>
+                           </div>
+                           
+                           <h5 class="border-bottom pb-2 mb-3">Perfil Profesional</h5>
+                           <div class="row g-3 mb-4">
+                             <div class="col-md-12">
+                                 <label class="form-label fw-bold">Máximo Nivel de Estudios</label>
+                                 <select class="form-select" required th:field="*{studies}">
+                                     <option value="">Seleccione...</option>
+                                     <option value="Bachiller">Bachiller</option>
+                                     <option value="Técnico">Técnico</option>
+                                     <option value="Tecnólogo">Tecnólogo</option>
+                                     <option value="Profesional">Profesional</option>
+                                     <option value="Postgrado">Postgrado</option>
+                                 </select>
+                             </div>
+                             <div class="col-12">
+                                   <label class="form-label fw-bold">Perfil / Resumen Profesional</label>
+                                   <textarea class="form-control" th:field="*{aditional}" rows="4" placeholder="Cuéntanos brevemente sobre tu experiencia..." required></textarea>
+                             </div>
+                           </div>
+
+                           <h5 class="border-bottom pb-2 mb-3">Documentación</h5>
+                           <div class="mb-4" th:if="${postulant.id == null}">
+                               <label class="form-label fw-bold">Adjuntar Hoja de Vida (PDF)</label>
+                               <input type="file" class="form-control" th:name="pdfFile" accept=".pdf" required>
+                               <div class="form-text">Asegúrate de que el archivo no supere los 5MB.</div>
+                           </div>
+                           
+                           <!-- Campos ocultos -->
+                           <input type="hidden" name="id" th:value="${postulant.id}" th:if="${postulant.id != null}" />
+                           <input type="hidden" id="jobId" name="jobId" th:value="${job.id}" th:if="${postulant.id == null}" />
+                           
+                           <div class="d-grid gap-2 mt-4">
+                             <button class="btn btn-success btn-lg" type="submit">Enviar Postulación</button>
+                           </div>
+                       </form>
+                   </div>
+               </div>
+           </div>
+       </div>
+    </div>
+    </main>
+     
+    <div th:insert="layout/footer :: footer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

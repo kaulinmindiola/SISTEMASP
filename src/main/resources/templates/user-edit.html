@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Editar Perfil - Asocabildos</title>
+</head>
+<body class="d-flex flex-column vh-100 bg-light">
+    <div th:insert="layout/header :: header"></div>
+    <main class="flex-grow-1 py-5 d-flex align-items-center justify-content-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8">
+                    <div class="card shadow-lg border-0 rounded-4">
+                        <div class="card-header bg-dark text-white text-center py-3 rounded-top-4">
+                            <h3 class="mb-0 fw-bold">Modificar Mis Datos</h3>
+                            <p class="small mb-0">Actualiza tu información personal.</p>
+                        </div>
+                        <div class="card-body p-4 p-md-5">
+                            <form th:action="@{/user/registration-user-update}" method="post" th:object="${user}">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                      <label class="form-label fw-bold">Nombre</label>
+                                      <input type="text" class="form-control" th:field="*{name}" required placeholder="Nombre">
+                                    </div>
+                                    <div class="col-md-6">
+                                      <label class="form-label fw-bold">Apellido</label>
+                                      <input type="text" class="form-control" th:field="*{lastname}" required placeholder="Apellido">
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                      <label class="form-label fw-bold">Nombre de Usuario</label>
+                                      <input type="text" class="form-control bg-light" th:field="*{username}" required placeholder="Username" readonly>
+                                      <div class="form-text">El nombre de usuario no se puede modificar.</div>
+                                    </div>
+                                    <div class="col-12">
+                                      <label class="form-label fw-bold">Email</label>
+                                      <input type="email" class="form-control" th:field="*{email}" required placeholder="Email">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mt-4 mb-4">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck1" required>
+                                    <label class="form-check-label small text-muted" for="gridCheck1">
+                                        Confirmo que los datos ingresados son correctos.
+                                    </label>
+                                </div>
+                                
+                                <input type="hidden" name="id" th:value="${user.id}" th:if="${user.id != null}" />
+                                
+                                <div class="d-grid">
+                                    <button class="btn btn-success btn-lg" type="submit">Guardar Cambios</button>
+                                </div>
+                                
+                                <!-- Mensajes de estado -->
+                                <div th:if="${param.success}" class="alert alert-success mt-3 text-center" role="alert">
+                                    <i class="bi bi-check-circle-fill"></i> ¡Datos actualizados con éxito!
+                                </div>
+                                <div th:if="${param.error}" class="alert alert-danger mt-3 text-center" role="alert">
+                                    <i class="bi bi-x-octagon-fill"></i> Error al actualizar los datos.
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div th:insert="layout/footer :: footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

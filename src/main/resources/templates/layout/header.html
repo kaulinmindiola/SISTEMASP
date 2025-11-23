@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Asocabildos - Portal de Empleo</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body>
+        <header class="p-3 bg-dark text-white border-bottom border-success border-3">
+          <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+              
+              <a th:href="@{/home}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none me-3">
+                <img width="36" height="36" src="/img/logo.png" alt="Asocabildos Logo" class="rounded-circle me-2"/>
+                <span class="fs-5 fw-bold">ASOCABILDOS</span>
+              </a>
+        
+              <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a th:href="@{/home}" class="nav-link px-3 text-white">Inicio</a></li>
+                <li><a th:href="@{/job/all-jobs}" class="nav-link px-3 text-white">Ofertas</a></li>
+                <!-- SECCIÓN ELIMINADA: El enlace a Sectores se ha ocultado -->
+                
+                <!-- Botón de Administrador -->
+                <li><a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/postulant/admin}" class="nav-link px-3 text-warning fw-bold" sec:authorize="isAuthenticated()"><i class="bi bi-gear-fill"></i> Panel Admin</a></li>
+              </ul>
+            
+               <!-- Área de Usuario -->
+               <div th:unless="${isLoggedIn}" class="text-end">
+                    <a class="btn btn-outline-light me-2" th:href="@{/user/login-user}" role="button">Ingresar</a>
+                    <a class="btn btn-success" th:href="@{/user/new-user}" role="button">Registrarme</a>
+               </div>
+               
+               <!-- Menú de Usuario Logueado -->
+               <div th:if="${isLoggedIn}" class="flex-shrink-0 dropdown">
+                    <a href="#" class="d-block link-light text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="/img/user-profile.png" alt="user" width="32" height="32" class="rounded-circle border border-white">
+                        <span class="ms-1 d-none d-md-inline" th:text="${#authentication.principal.username}">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+                          <li><span class="dropdown-item-text text-muted small">Bienvenido(a)</span></li>
+                          <li><a class="dropdown-item" th:if="${#authorization.expression('hasRole(''VISITANTE'')')}" th:href="@{/postulant/user}">Mis Postulaciones</a></li>
+                          <li><a class="dropdown-item" th:if="${#authorization.expression('hasRole(''VISITANTE'')')}" th:href="@{/user/profile}">Mi Perfil</a></li>
+                          <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item text-danger" th:href="@{/user/logout}">Cerrar Sesión</a></li>
+                     </ul>
+                </div>
+            </div>
+          </div>
+    </header>
+</body>
+</html>
