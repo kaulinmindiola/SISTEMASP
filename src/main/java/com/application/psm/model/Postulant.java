@@ -25,8 +25,8 @@ public class Postulant {
     @Column(name = "pdf_file_name")
     private String pdfFileName;
     
-    @Column(name = "aditional")
-	private String aditional;
+   @Column(name = "aditional", columnDefinition = "TEXT") 
+private String aditional;
     
     @Column(name = "estado")
     private String estado; // Puede ser "aceptado", "rechazado", "pendiente", etc.
