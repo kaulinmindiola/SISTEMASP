@@ -12,7 +12,7 @@ public class Postulant {
 	@Column(name = "age")
 	private Integer age;
 	@Column(name = "phone", nullable=false)
-	private Integer phone;
+	private String phone;
 	@Column(name = "studies")
 	private String studies;
 	@Column(name = "address")
@@ -45,7 +45,7 @@ public class Postulant {
 	}
 
 
-	public Postulant(Integer age, Integer phone, String studies, String address, byte[] curriculum, String pdfFileName,
+	public Postulant(Integer age, String phone, String studies, String address, byte[] curriculum, String pdfFileName,
 			String aditional, String estado, User user, JobOffer jobOffer) {
 		super();
 		this.age = age;
@@ -80,12 +80,12 @@ public class Postulant {
 	}
 
 
-	public Integer getPhone() {
+	public String getPhone() {
 		return phone;
 	}
 
 
-	public void setPhone(Integer phone) {
+	public void setPhone(String phone) {
 		this.phone = phone;
 	}
 
