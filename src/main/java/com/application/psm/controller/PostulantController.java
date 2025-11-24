@@ -65,62 +65,60 @@ public class PostulantController {
         }
 	}
 	//============================ Metodo para registrar postulante ============================
-	@PostMapping("/registration-postulant")
-	public String savePostulant( @ModelAttribute("postulant") Postulant postulant, @RequestParam(value = "jobId", required = false) Long jobId, @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile, @AuthenticationPrincipal UserDetails userDetails) {
-        if (postulant.getId() == null) {
-        	System.out.println("Registrando nuevo postulante...");
-        	// Manejar el archivo PDF
-            if (!pdfFile.isEmpty()) {
-                try {
-                    // Obtener los bytes del archivo PDF
-                    byte[] pdfBytes = pdfFile.getBytes();
-                    // Guardar el contenido del archivo PDF en el objeto Postulant
-                    postulant.setCurriculum(pdfBytes);
-                    // Establecer el nombre del archivo PDF en el objeto Postulant si lo necesitas
-                    postulant.setPdfFileName(pdfFile.getOriginalFilename());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    // Manejar el error, por ejemplo, redirigiendo a una página de error
-                    return "layout/error/403";
-                }
-            }
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            // Comprobamos si el usuario está autenticado y es UserDetails
-            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-                // Si es UserDetails, obtenemos el nombre de usuario
-                UserDetails loggedInUserDetails = (UserDetails) authentication.getPrincipal();
-                
-                // Ahora puedes obtener el usuario de tu servicio utilizando el nombre de usuario
-                User user = userService.findByUsername(loggedInUserDetails.getUsername());
-                
-                // Asignamos el usuario al postulante
-                postulant.setUser(user);
-            }
-            //jobId es el valor que eligue el usuario en form tiene que tener campo id="jobId" etc
-            // Obtener el Job seleccionado
-            JobOffer job = jobService.getJobOfferById(jobId);
-            // Establecer el Job en la Postulante
-            postulant.setJobOffer(job);
-            // Guardar la JobOffer
-            postulantService.savePostulant(postulant);
+@PostMapping("/registration-postulant")
+public String savePostulant(@ModelAttribute("postulant") Postulant postulant,
+                            @RequestParam(value = "jobId", required = false) Long jobId,
+                            @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile,
+                            @AuthenticationPrincipal UserDetails userDetails) {
 
-	    } else {
-	    	// Obtener el postulante existente desde la base de datos
-	        Postulant existingPostulant = postulantService.getPostulantById(postulant.getId());
-	      
-	        if (existingPostulant != null) {
-	            // Sobrescribir solo los campos que se desean modificar
-	            existingPostulant.setAge(postulant.getAge());
-	            existingPostulant.setPhone(postulant.getPhone());
-	            existingPostulant.setStudies(postulant.getStudies());
-	            existingPostulant.setAddress(postulant.getAddress());
-	            existingPostulant.setAditional(postulant.getAditional());
-	            postulantService.editPostulant(existingPostulant);
-	        } 
-           
-	    }
+    try {
+        // 1. Manejo del Archivo PDF
+        if (pdfFile != null && !pdfFile.isEmpty()) {
+            postulant.setCurriculum(pdfFile.getBytes());
+            postulant.setPdfFileName(pdfFile.getOriginalFilename());
+        }
+
+        // 2. Asociar Usuario Logueado (Si existe)
+        if (userDetails != null) {
+            User user = userService.findByUsername(userDetails.getUsername());
+            postulant.setUser(user);
+        }
+
+        // 3. LÓGICA PRINCIPAL (Crear o Editar)
+        if (postulant.getId() == null) {
+            // ES NUEVO REGISTRO
+            if (jobId == null) {
+                // Seguridad: Si no llega el ID del trabajo, no podemos guardar. Redirigimos.
+                return "redirect:/job/all-jobs?error=missing-job";
+            }
+            JobOffer job = jobService.getJobOfferById(jobId);
+            postulant.setJobOffer(job);
+            postulantService.savePostulant(postulant);
+        } else {
+            // ES EDICIÓN
+            Postulant existing = postulantService.getPostulantById(postulant.getId());
+            if (existing != null) {
+                existing.setAge(postulant.getAge());
+                existing.setPhone(postulant.getPhone());
+                existing.setStudies(postulant.getStudies());
+                existing.setAddress(postulant.getAddress());
+                existing.setAditional(postulant.getAditional());
+                // Si subió un nuevo PDF, lo actualizamos
+                if (pdfFile != null && !pdfFile.isEmpty()) {
+                    existing.setCurriculum(pdfFile.getBytes());
+                    existing.setPdfFileName(pdfFile.getOriginalFilename());
+                }
+                postulantService.editPostulant(existing);
+            }
+        }
+
         return "redirect:/postulant/user";
-	}
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/job/all-jobs?error=upload-failed";
+    }
+}
 	
 	//============================ Metodo para editar un postulante ============================
 	@GetMapping("/update-postulant/{id}")
